@@ -1,27 +1,26 @@
 const express = require("express");
 const router = express.Router();
+const {
+  createTodo,
+  getTodos,
+  removeTodos,
+  updateTodoAction,
+} = require("../Controllers/todoController");
 
-const todoList = [];
 router.get("/", (req, res) => {
-  res.json(todoList);
+  res.json(getTodos());
 });
 // create a todos
 router.post("/", (req, res) => {
   const body = req.body;
-  currentMaxId =
-    todoList.length > 0 ? Math.max(...todoList.map((todo) => todo.id)) : 0;
-  nextId = currentMaxId + 1;
-  const newTodo = { ...body, id: nextId };
-  todoList.push(newTodo);
+  const newTodo = createTodo(body);
   res.json(newTodo);
 });
 
 router.delete("/:id", (req, res) => {
   const { id } = req.params;
-  const targetTodo = todoList.find((todo) => todo.id == id);
-  if (targetTodo) {
-    const targetIndex = todoList.indexOf(targetTodo);
-    todoList.splice(targetIndex, 1);
+  const isDeleted = removeTodos(id);
+  if (isDeleted) {
     res.sendStatus(204);
   } else {
     res.sendStatus(403);
@@ -31,11 +30,8 @@ router.delete("/:id", (req, res) => {
 router.put("/:id", (req, res) => {
   const { id } = req.params;
   const body = req.body;
-  const targetTodo = todoList.find((todo) => todo.id == id);
-  if (targetTodo) {
-    const targetIndex = todoList.indexOf(targetTodo);
-    const updatedTodo = { ...targetTodo, ...body };
-    todoList.splice(targetIndex, 1, updatedTodo);
+  const updatedTodo = updateTodoAction(id, body);
+  if (updatedTodo) {
     res.json(updatedTodo);
   } else {
     res.sendStatus(403);
