@@ -58,7 +58,7 @@
     <script>
       let todos = [];
 
-      function displayTodo({ title, desc, isCompleted }, index) {
+      function displayTodo({ id, title, desc, isCompleted }, index) {
         const copiedTemplate = document
           .getElementById("todoTemplate")
           .content.cloneNode(true);
@@ -76,8 +76,16 @@
         copiedTemplate
           .getElementById("toDoDel")
           .addEventListener("click", () => {
-            todos.splice(index, 1);
-            renderTodos();
+            fetch(`/api/todos/${id}`, {
+              method: "Delete",
+            })
+              .then((response) => {
+                todos.splice(index, 1);
+                renderTodos();
+              })
+              .catch((e) => {
+                console.log(e);
+              });
           });
 
         const isCompletedFunction = (event) => {
@@ -110,8 +118,19 @@
           title,
           desc,
         };
-        todos.push(todo);
-        renderTodos();
+
+        fetch("/api/todos", {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "Post",
+          body: JSON.stringify(todo),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            todos.push(data);
+            renderTodos();
+          });
       }
 
       async function getInitData() {

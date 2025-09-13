@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
-const port = 5050;
 
+const port = 5050;
 const todoList = [
   {
     id: 1,
@@ -33,6 +33,18 @@ app.post("/api/todos", (req, res) => {
   const newTodo = { ...body, id: nextId };
   todoList.push(newTodo);
   res.json(newTodo);
+});
+
+app.delete("/api/todos/:id", (req, res) => {
+  const { id } = req.params;
+  const targetTodo = todoList.find((todo) => todo.id == id);
+  if (targetTodo) {
+    const targetIndex = todoList.indexOf(targetTodo);
+    todoList.splice(targetIndex, 1);
+    res.sendStatus(204);
+  } else {
+    res.sendStatus(403);
+  }
 });
 
 app.listen(port, () => {
