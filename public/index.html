@@ -40,6 +40,17 @@
       <img src="./assets/logo.png" width="40px" />
       <h1>My todo list:</h1>
       <form onsubmit="todoSubmit(event)">
+        <div class="input-group mb-3">
+          <label class="input-group-text" for="inputGroupSelect02"
+            >Program</label
+          >
+          <select class="form-select" id="inputGroupSelect02">
+            <option selected>Choose...</option>
+            <option value="Chest">Chest</option>
+            <option value="Arm">Arm</option>
+            <option value="Leg">Leg</option>
+          </select>
+        </div>
         <div class="mb-3">
           <label for="todoTitle" class="form-label">Title</label>
           <input type="text" class="form-control" id="todoTitle" />
@@ -188,8 +199,15 @@
         return todoList;
       }
 
+      async function getInitSetsData() {
+        const response = await fetch("/api/sets");
+        const sets = await response.json();
+        return sets;
+      }
+
       async function displayInitTodos() {
         const initTodos = await getInitData();
+        const sets = await getInitSetsData();
         todos = initTodos;
         renderTodos();
       }
